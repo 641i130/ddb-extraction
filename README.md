@@ -1,5 +1,10 @@
 # ddb-extraction
-Extract the samples of a DDB Vocaloid file.
+
+(Attempt to) Extract the samples of a DDB Vocaloid file. Help would be appreciated!
+
+[GBATemp Thread](https://gbatemp.net/threads/i-found-out-the-format-of-samples-in-vocaloid-2-3-and-4-voicebanks-now-what.400402/)
+
+[Discord Server](https://discord.gg/FzB49rq)
 
 ## Usage:
 
