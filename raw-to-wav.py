@@ -1,8 +1,6 @@
 # RAW to WAV
 # Written by 641i130
 import sys, wave, os
-# Set range of all raw files to put into a wav file or files
-x,y = 1,5859 # 5859
 
 # Make samples folder if non-exsistant
 if not os.path.exists("samples"):
@@ -12,6 +10,10 @@ try:
     fold = sys.argv[1]
 except:
     print("Please use:\npython raw-to-wav.py [folder name with raw files] [0 or 1]\n\nThis should be the name of the ddb file without the extension.\n0 as in seperate sample files.\n1 as in one large sample file.")
+    
+# Set range of all raw files to put into a wav file or files
+x = 1
+y = len(os.listdir(fold))
 
 for i in range(x,y+1):
     fi = "{}/s{}".format(fold,str(i))
