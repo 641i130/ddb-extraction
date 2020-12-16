@@ -29,8 +29,7 @@ ep = -1
 sn = 0
 counter=0
 # Interate through file and do things with data.
-# length offset prevents index out of bounds error
-for i in range(len(array) + 1 - 4):
+for i in range(len(array)+1):
     # If the current byte = S and following bytes are N and D, set byte after SND to start position
     if array[i] == 83 and array[i+1] == 78 and array[i+2] == 68 and sp == -1:
         sp = i
