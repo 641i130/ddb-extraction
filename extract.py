@@ -1,57 +1,89 @@
-# Takes DDB file and extracts/splits all the raw data for WAV conversion
-"""
-BASED OFF OF mrsky's code from 
-https://gbatemp.net/threads/i-found-out-the-format-of-samples-in-vocaloid-2-3-and-4-voicebanks-now-what.400402/
-"""
-import sys
+#!/usr/bin/env python3
+
+import argparse
 import os
-# File location / name
-try:
-    f = sys.argv[1]
-except:
-    print("Please use:\npython extract.py [location of ddb file]")
+import wave
 
-# Make folder for samples
-path = os.getcwd()
-folder = "{}/{}/".format(path,f[:-4])
-print(folder)
+from wave import Wave_write
 
-if not os.path.exists(folder):
-    os.makedirs(folder)
-
-with open(f,"rb") as yee:
-    array = yee.read()
-    # Print size of DDB file.
-    print(str(len(array)))
-
-sp = -1
-ep = -1
-sn = 0
-counter=0
-# Interate through file and do things with data.
-for i in range(len(array)+1):
-    # If the current byte = S and following bytes are N and D, set byte after SND to start position
-    if array[i] == 83 and array[i+1] == 78 and array[i+2] == 68 and sp == -1:
-        sp = i
-        print("Found beginning of sample!")
-        counter+=1
-    #Same thing but with FRM2h,
-    if (array[i] == 70 and array[i +1] == 82 and array[i + 2] == 77 and array[i + 3] == 50 and sp != -1):
-        ep = i - 1
-        print("Found end of sample")
-    
-    if sp != -1 and ep != -1:
-        # Write to file!!!
-        sn += 1
-        print("Writing sample: {}".format(str(sn)))
-        # open file
-        fn = "s{}".format(str(sn))
-        with open("{}/{}".format(folder,fn),"wb") as samp:
-            # File is still raw btw
-            samp.write(array[sp:ep])
-        # write bytes in given range
-        # close file
-        sp,ep = -1,-1
+start_encode = 'SND'.encode()
+end_encode = 'FRM2'.encode()
+wav_params = (1, 2, 44100, 0, 'NONE', 'NONE')
+# threshold = 0
 
 
-print("Total of {} samples.".format(str(counter)))
+def parse_args(args=None):  # : list[str]
+    # initialize parser
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--src-path', help='source ddb file path')
+    parser.add_argument('--dst-path', help='destination extract path, default="./extract/"',
+                        default='./extract/')
+    parser.add_argument('--merge', help='enable to generate a merged large wav file',
+                        action='store_true')
+
+    # parse args
+    args = parser.parse_args(args)
+    src_path: str = os.path.normpath(args.src_path)
+    dst_path: str = os.path.normpath(args.dst_path)
+    merge: bool = args.merge
+    if merge and not dst_path.endswith('.wav'):
+        dst_path = os.path.join(dst_path, 'merge.wav')
+
+    # make dirs
+    dir_path = dst_path
+    if dst_path.endswith('.wav'):
+        dir_path = os.path.dirname(dst_path)
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+    return src_path, dst_path, merge
+
+
+def main():
+    src_path, dst_path, merge = parse_args()
+    with open(src_path, 'rb') as ddb_f:
+        ddb_data = ddb_f.read()
+    length = len(ddb_data)
+
+    merge_f: Wave_write = None
+    if merge:
+        merge_f = wave.open(dst_path, 'wb')
+        merge_f.setparams(wav_params)
+
+    offset = 0
+    file_id = 0
+    while(True):
+        if (start_idx := ddb_data.find(start_encode, offset)) == -1:
+            break
+        offset = start_idx+4
+        if (end_idx := ddb_data.find(end_encode, offset)) == -1:
+            break
+
+        # There are cases that (end_idx - offset) % 2 == 1
+        end_idx = offset+(end_idx-offset)//2*2
+
+        offset = end_idx+5
+        print(f'{file_id=:<20} progress: {offset:>15,} / {length:<15,}')
+
+        wav_data = ddb_data[start_idx+4: end_idx]
+        if merge:
+            merge_f.writeframes(wav_data)
+            # merge_f.writeframes(b'\x00'*1024)
+        else:
+            file_path = os.path.join(dst_path, f'{file_id}.wav')
+            with wave.open(file_path, 'wb') as wav_f:
+                wav_f: Wave_write
+                wav_f.setparams(wav_params)
+                wav_f.writeframes(wav_data)
+            print('    wav saved at: ', file_path)
+        file_id += 1
+        # if file_id >= threshold and threshold > 0:
+        #     break
+        if offset >= length:
+            break
+    if merge:
+        merge_f.close()
+        print('merged wav saved at: ', dst_path)
+
+
+if __name__ == '__main__':
+    main()
