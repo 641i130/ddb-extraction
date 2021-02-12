@@ -18,8 +18,8 @@ def parse_args(args=None):  # : list[str]
     # initialize parser
     parser = argparse.ArgumentParser()
     parser.add_argument('--src-path', help='source ddb file path')
-    parser.add_argument(
-        '--dst-path', help='destination extract path, default="./wav.zip (merge.wav)"')
+    parser.add_argument('--dst-path',
+                        help='destination extract path, default="./wav.zip (merge.wav)"')
     parser.add_argument('--merge', help='enable to generate a merged large wav file',
                         action='store_true')
 
@@ -29,7 +29,7 @@ def parse_args(args=None):  # : list[str]
     dst_path: str = args.dst_path
     merge: bool = args.merge
     if dst_path is None:
-        dst_path = './merge.wav' if merge else './extract.zip'
+        dst_path = './merge.wav' if merge else './wav.zip'
     elif merge and not os.path.isdir(dst_path):
         dst_path = os.path.join(dst_path, 'merge.wav')
     dst_path: str = os.path.normpath(dst_path)
