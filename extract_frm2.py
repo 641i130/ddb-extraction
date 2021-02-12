@@ -12,7 +12,7 @@ def parse_args(args=None):  # : list[str]
     parser = argparse.ArgumentParser()
     parser.add_argument('--src-path', help='source ddb file path')
     parser.add_argument('--dst-path',
-                        help='destination extract path, default="./frm2.zip"')
+                        help='destination extract path, default to be "./frm2.zip"')
 
     # parse args
     args = parser.parse_args(args)
