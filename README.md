@@ -8,7 +8,7 @@ They got the ddi extraction with naming samples down really well!!!
 
 [GBATemp Thread](https://gbatemp.net/threads/i-found-out-the-format-of-samples-in-vocaloid-2-3-and-4-voicebanks-now-what.400402/)
 
-[Discord Server](https://discord.gg/fXDkPRrsBd)
+[Discord Server](https://discord.gg/rZzwH9d4Hm)
 
 ## Usage:
 
