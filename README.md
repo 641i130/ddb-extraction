@@ -1,10 +1,12 @@
-# ddb-extraction
-
+Update:
 # Check out this modified version by [ain-soph](https://github.com/ain-soph)
 [github.com/ain-soph](https://github.com/ain-soph/ddb-extraction)
 They got the ddi extraction with naming samples down really well!!!
+---
 
-(Attempt to) Extract the samples of a DDB Vocaloid file. Help would be appreciated!
+# ddb-extraction
+~~(Attempt to) Extract the samples of a DDB Vocaloid file. Help would be appreciated!~~
+This codebase is now out of date! Use the one linked above!
 
 ## Usage:
 
